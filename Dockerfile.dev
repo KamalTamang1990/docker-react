@@ -1,0 +1,15 @@
+FROM node:16-alpine
+
+WORKDIR '/app'
+
+# COPY package.json .
+
+# It is clear that node_modules folder in container is built by root user during the step npm install, therefore has root as user. This is the reason we don't have access to that folder when we set up our node user. To resolve this what we have to do is firstly using the root user we have to give permission to the node user while copying files from local directory to image and then later set up node as the user as shown below:
+COPY --chown=node:node package.json .
+RUN npm install
+
+#COPY . .
+COPY --chown=node:node . .
+USER node
+
+CMD ["npm", "run", "start"]
